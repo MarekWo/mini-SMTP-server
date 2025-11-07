@@ -24,8 +24,11 @@ Update these values:
 DOMAIN=your-domain.com
 DKIM_SELECTOR=mail
 HOSTNAME=smtp.your-domain.com
+NETWORK_NAME=mail-network  # Change if integrating with existing project
 TEST_EMAIL=your-email@example.com
 ```
+
+**Network Integration Tip:** If you have an existing Docker project (like Manager-Wystaw), set `NETWORK_NAME` to match that project's network (e.g., `manager-wystaw_default`).
 
 ### 2. Generate DKIM Keys
 

@@ -35,4 +35,4 @@ services:
         echo "";
       '
     networks:
-      - mail-network
+      - smtp-network

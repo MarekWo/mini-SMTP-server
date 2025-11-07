@@ -23,9 +23,9 @@ services:
       - "${SMTP_PORT:-25}:25"
     restart: unless-stopped
     networks:
-      - mail-network
+      - smtp-network
 
 networks:
-  mail-network:
-    name: mail-network
+  smtp-network:
+    name: ${NETWORK_NAME:-mail-network}
     driver: bridge

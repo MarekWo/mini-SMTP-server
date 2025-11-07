@@ -8,8 +8,9 @@ A lightweight, self-contained SMTP relay server in Docker with full DKIM support
 - 🔐 **DKIM Signing** - Properly sign emails with DKIM for better deliverability
 - 🐳 **Docker-based** - Easy deployment and integration
 - 🔧 **Configurable** - Environment variable configuration
-- 📝 **Reusable** - Easy to integrate with existing projects
+- 📝 **Reusable** - Easy to integrate with existing projects (see [INTEGRATION-MANAGER-WYSTAW.md](INTEGRATION-MANAGER-WYSTAW.md))
 - 🚀 **Production-ready** - Includes SPF, DKIM, and DMARC support
+- 🔌 **Flexible networking** - Works with existing Docker networks or creates its own
 
 ## Quick Start
 
@@ -114,7 +115,7 @@ Check the email headers to verify DKIM signature passes.
 
 ### Option 1: External Network (Recommended)
 
-If `mini-smtp-server` is running separately, connect your app to the `mail-network`:
+If `mini-smtp-server` is running separately, connect your app to the network:
 
 ```yaml
 # your-app/docker-compose.yml
@@ -131,10 +132,21 @@ services:
 networks:
   mail-network:
     external: true
-    name: mail-network
+    name: mail-network  # Must match NETWORK_NAME in mini-SMTP-server's .env
 ```
 
-### Option 2: Same Compose File
+### Option 2: Use Existing Project Network
+
+If your project already has a network (e.g., `manager-wystaw_default`), configure `mini-smtp-server` to join it:
+
+1. In `mini-smtp-server/.env`:
+   ```env
+   NETWORK_NAME=manager-wystaw_default
+   ```
+
+2. In your project, just reference `smtp` - no network config needed!
+
+### Option 3: Same Compose File
 
 Include the SMTP server directly (see `docker-compose.integration-example.yml` for full example).
 
@@ -212,12 +224,20 @@ mail(
 | `DOMAIN` | Your domain name | `example.com` |
 | `DKIM_SELECTOR` | DKIM selector | `mail` |
 | `HOSTNAME` | SMTP server hostname | `smtp.example.com` |
+| `NETWORK_NAME` | Docker network name | `mail-network` |
 | `SMTP_PORT` | External SMTP port | `25` |
 | `MESSAGE_SIZE_LIMIT` | Max message size (bytes) | `10485760` (10MB) |
 | `TZ` | Timezone | `UTC` |
 | `ALLOWED_SENDER_DOMAINS` | Allowed sender domains | Uses `DOMAIN` |
 
+**Network Integration Tips:**
+- Set `NETWORK_NAME` to match your existing project's network for seamless integration
+- Example: `NETWORK_NAME=manager-wystaw_default` to integrate with Manager-Wystaw project
+- Default `mail-network` works great for standalone or multi-project setups
+
 ### File Structure
+
+For detailed information about all project files, see [FILES.md](FILES.md).
 
 ```
 mini-smtp-server/
@@ -226,13 +246,17 @@ mini-smtp-server/
 │   └── mail.txt                  # Public key (for DNS)
 ├── docker-compose.yml            # Main compose file
 ├── docker-compose.test.yml       # Test service
-├── docker-compose.integration-example.yml  # Integration example
+├── docker-compose.integration-example.yml  # Integration examples
 ├── generate-dkim-keys.ps1        # Key generator (Windows)
 ├── generate-dkim-keys.sh         # Key generator (Linux/Mac)
 ├── .env.example                  # Example configuration
 ├── .env                          # Your configuration (create this)
 ├── .gitignore                    # Git ignore rules
-└── README.md                     # This file
+├── README.md                     # Main documentation
+├── QUICKSTART.md                 # Quick start guide
+├── EXAMPLES.md                   # Code examples
+├── INTEGRATION-MANAGER-WYSTAW.md # Integration guide
+└── FILES.md                      # Project files overview
 ```
 
 ## Troubleshooting

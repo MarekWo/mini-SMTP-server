@@ -22,14 +22,41 @@ services:
     # networks:
     #   - mail-network
 
-# If using mini-SMTP-server from a separate project:
+# ============================================
+# Option 1: Use external network (recommended)
+# ============================================
+# If mini-SMTP-server is running separately, connect to its network.
+# Make sure NETWORK_NAME in mini-SMTP-server's .env matches this name!
+
 networks:
   mail-network:
     external: true
-    name: mail-network
+    name: mail-network  # This should match NETWORK_NAME from mini-SMTP-server's .env
 
 # ============================================
-# Alternative: Include mini-SMTP-server directly
+# Option 2: Use existing project network
+# ============================================
+# If your project already has a network (e.g., Manager-Wystaw uses "manager-wystaw_default"),
+# configure mini-SMTP-server to use that network:
+#
+# 1. In mini-SMTP-server's .env file, set:
+#    NETWORK_NAME=manager-wystaw_default
+#
+# 2. In your project's docker-compose.yml:
+
+# services:
+#   your-app:
+#     # ... your app config ...
+#     environment:
+#       - SMTP_HOST=smtp
+#       - SMTP_PORT=25
+#     networks:
+#       - default  # Your project's default network
+#
+# # No need to define networks section - mini-SMTP-server will join your network
+
+# ============================================
+# Option 3: Include mini-SMTP-server directly
 # ============================================
 # If you want to include the SMTP server in the same compose file:
 
@@ -48,5 +75,5 @@ networks:
 #       - /path/to/mini-smtp-server/dkim/${DKIM_SELECTOR:-mail}.private:/etc/opendkim/keys/${DOMAIN:-example.com}.private:ro
 #       - /path/to/mini-smtp-server/dkim/${DKIM_SELECTOR:-mail}.txt:/etc/opendkim/keys/${DOMAIN:-example.com}.txt:ro
 #     networks:
-#       - mail-network
+#       - default  # Use your project's default network
 #     restart: unless-stopped
