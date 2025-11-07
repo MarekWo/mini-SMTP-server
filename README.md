@@ -16,7 +16,7 @@ A lightweight, self-contained SMTP relay server in Docker with full DKIM support
 ### 1. Clone or Copy This Project
 
 ```bash
-git clone <your-repo-url> mini-smtp-server
+git clone https://github.com/MarekWo/mini-SMTP-server mini-smtp-server
 cd mini-smtp-server
 ```
 
