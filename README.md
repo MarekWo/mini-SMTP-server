@@ -162,6 +162,16 @@ TLS/SSL: Off (internal network)
 From Address: anything@your-domain.com
 ```
 
+**Important: Setting Display Name**
+
+Set the sender display name in your application (not in the SMTP server):
+
+```
+From: "Your App Name" <noreply@your-domain.com>
+```
+
+This makes emails look professional in recipients' inboxes. See [EXAMPLES.md](EXAMPLES.md) for code examples in various languages.
+
 #### Example: Python
 
 ```python
@@ -170,7 +180,7 @@ from email.message import EmailMessage
 
 msg = EmailMessage()
 msg['Subject'] = 'Test Email'
-msg['From'] = 'noreply@your-domain.com'
+msg['From'] = '"Manager Wystaw" <mailbot@grupa-lumen.pl>'  # With display name
 msg['To'] = 'recipient@example.com'
 msg.set_content('Hello from mini-smtp-server!')
 
@@ -193,7 +203,7 @@ const transporter = nodemailer.createTransport({
 });
 
 await transporter.sendMail({
-  from: 'noreply@your-domain.com',
+  from: '"Manager Wystaw" <mailbot@grupa-lumen.pl>',  // With display name
   to: 'recipient@example.com',
   subject: 'Test Email',
   text: 'Hello from mini-smtp-server!'
@@ -207,13 +217,17 @@ await transporter.sendMail({
 ini_set('SMTP', 'smtp');
 ini_set('smtp_port', 25);
 
+$headers = 'From: Manager Wystaw <mailbot@grupa-lumen.pl>';  // With display name
+
 mail(
     'recipient@example.com',
     'Test Email',
     'Hello from mini-smtp-server!',
-    'From: noreply@your-domain.com'
+    $headers
 );
 ```
+
+**For more examples** in Python, Node.js, PHP, Java, C#, Go, and Ruby, see [EXAMPLES.md](EXAMPLES.md).
 
 ## Configuration
 

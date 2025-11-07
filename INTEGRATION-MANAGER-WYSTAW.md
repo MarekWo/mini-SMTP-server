@@ -55,7 +55,18 @@ const transporter = nodemailer.createTransport({
   port: 25,
   secure: false
 });
+
+// Wysyłanie emaila z nazwą nadawcy
+await transporter.sendMail({
+  from: '"Manager Wystaw" <mailbot@grupa-lumen.pl>',  // Nazwa + email
+  to: 'recipient@example.com',
+  subject: 'Powiadomienie z Manager Wystaw',
+  text: 'Treść wiadomości',
+  html: '<p>Treść <strong>wiadomości</strong></p>'
+});
 ```
+
+**Ważne:** Nazwa nadawcy (Display Name) jest ustawiana **w aplikacji**, nie w serwerze SMTP. W przykładzie powyżej "Manager Wystaw" to nazwa wyświetlana w skrzynce pocztowej odbiorcy.
 
 ### Krok 5: Testowanie
 
@@ -198,6 +209,88 @@ projekty/
     └── ...
 ```
 
+## Konfiguracja nazwy nadawcy w Manager-Wystaw
+
+### Dodaj zmienne środowiskowe
+
+W pliku `.env` w Manager-Wystaw:
+
+```env
+# SMTP Configuration
+SMTP_HOST=smtp
+SMTP_PORT=25
+
+# Email sender configuration
+EMAIL_SENDER_NAME=Manager Wystaw
+EMAIL_SENDER_ADDRESS=mailbot@grupa-lumen.pl
+```
+
+### Przykład kodu wysyłki
+
+```javascript
+const nodemailer = require('nodemailer');
+
+// Load configuration from environment
+const emailConfig = {
+  host: process.env.SMTP_HOST || 'smtp',
+  port: parseInt(process.env.SMTP_PORT || '25'),
+  senderName: process.env.EMAIL_SENDER_NAME || 'Manager Wystaw',
+  senderAddress: process.env.EMAIL_SENDER_ADDRESS || 'mailbot@grupa-lumen.pl',
+};
+
+// Create transporter
+const transporter = nodemailer.createTransport({
+  host: emailConfig.host,
+  port: emailConfig.port,
+  secure: false,
+  tls: { rejectUnauthorized: false }
+});
+
+// Send email function
+async function sendNotification(to, subject, textContent, htmlContent) {
+  const mailOptions = {
+    from: `"${emailConfig.senderName}" <${emailConfig.senderAddress}>`,
+    to,
+    subject,
+    text: textContent,
+    html: htmlContent || `<p>${textContent}</p>`
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent:', info.messageId);
+    return info;
+  } catch (error) {
+    console.error('Failed to send email:', error);
+    throw error;
+  }
+}
+
+// Usage example
+await sendNotification(
+  'user@example.com',
+  'Wystawa została zatwierdzona',
+  'Gratulacje! Twoja wystawa została zatwierdzona przez administratora.',
+  '<h2>Gratulacje!</h2><p>Twoja wystawa została zatwierdzona przez administratora.</p>'
+);
+```
+
+### Wyświetlanie w skrzynce pocztowej
+
+Dzięki ustawieniu `from: '"Manager Wystaw" <mailbot@grupa-lumen.pl>'`, odbiorcy zobaczą w swojej skrzynce:
+
+```
+Od: Manager Wystaw
+```
+
+Zamiast:
+
+```
+Od: mailbot@grupa-lumen.pl
+```
+
+To znacznie poprawia profesjonalizm i rozpoznawalność emaili od Twojej aplikacji.
+
 ## Zalety tej integracji
 
 ✅ **Brak zewnętrznych usług SMTP** - wszystko w Dockerze
@@ -205,7 +298,8 @@ projekty/
 ✅ **Izolacja** - dedykowany kontener dla poczty
 ✅ **Reużywalność** - ten sam SMTP dla wielu projektów
 ✅ **Łatwa konfiguracja** - tylko jedna zmienna `NETWORK_NAME`
+✅ **Profesjonalne emaile** - z nazwą nadawcy widoczną w skrzynce
 
 ---
 
-**Gotowe!** Twój projekt Manager-Wystaw może teraz wysyłać emaile z pełnym wsparciem DKIM. 🎉
+**Gotowe!** Twój projekt Manager-Wystaw może teraz wysyłać emaile z pełnym wsparciem DKIM i profesjonalną nazwą nadawcy. 🎉

@@ -8,8 +8,8 @@ Quick reference guide to all files in mini-SMTP-server project.
 |------|-------------|
 | [README.md](README.md) | Complete project documentation with all features and configuration |
 | [QUICKSTART.md](QUICKSTART.md) | 5-minute quick start guide |
-| [EXAMPLES.md](EXAMPLES.md) | Code examples for 7+ programming languages |
-| [INTEGRATION-MANAGER-WYSTAW.md](INTEGRATION-MANAGER-WYSTAW.md) | Integration guide for Manager-Wystaw project |
+| [EXAMPLES.md](EXAMPLES.md) | Code examples for 7+ programming languages (with display name examples) |
+| [INTEGRATION-MANAGER-WYSTAW.md](INTEGRATION-MANAGER-WYSTAW.md) | Integration guide for Manager-Wystaw project (includes sender name config) |
 | [FILES.md](FILES.md) | This file - project files overview |
 | [podsumowanie.md](podsumowanie.md) | Project summary (Polish - internal) |
 

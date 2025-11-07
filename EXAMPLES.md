@@ -2,6 +2,17 @@
 
 Examples of sending emails from various programming languages using mini-SMTP-server.
 
+## 📝 Important: Sender Name (Display Name)
+
+All examples below show how to set both the **sender address** and **display name**. The display name is what recipients see in their inbox (e.g., "Manager Wystaw" instead of just "mailbot@grupa-lumen.pl").
+
+**Format:**
+```
+From: Display Name <email@domain.com>
+```
+
+This is set **in your application**, not in the SMTP server. The SMTP relay (mini-smtp-server) preserves these headers as-is.
+
 ## Table of Contents
 
 - [Python](#python)
@@ -22,10 +33,11 @@ Examples of sending emails from various programming languages using mini-SMTP-se
 import smtplib
 from email.message import EmailMessage
 
-def send_email(to_address, subject, body):
+def send_email(to_address, subject, body, from_name='Your App', from_address='noreply@your-domain.com'):
     msg = EmailMessage()
     msg['Subject'] = subject
-    msg['From'] = 'noreply@your-domain.com'
+    # Set sender with display name
+    msg['From'] = f'{from_name} <{from_address}>'
     msg['To'] = to_address
     msg.set_content(body)
 
@@ -39,7 +51,9 @@ def send_email(to_address, subject, body):
 send_email(
     'recipient@example.com',
     'Test Email',
-    'Hello from mini-smtp-server!'
+    'Hello from mini-smtp-server!',
+    from_name='Manager Wystaw',  # Display name
+    from_address='mailbot@grupa-lumen.pl'
 )
 ```
 
@@ -111,11 +125,14 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// Send email
+// Send email with display name
 async function sendEmail() {
   try {
     const info = await transporter.sendMail({
-      from: 'noreply@your-domain.com',
+      // Set sender with display name (recommended)
+      from: '"Manager Wystaw" <mailbot@grupa-lumen.pl>',
+      // Alternative format:
+      // from: { name: 'Manager Wystaw', address: 'mailbot@grupa-lumen.pl' },
       to: 'recipient@example.com',
       subject: 'Test Email',
       text: 'Hello from mini-smtp-server!',
@@ -129,6 +146,59 @@ async function sendEmail() {
 }
 
 sendEmail();
+```
+
+### Example: Integration with Manager-Wystaw
+
+For projects like Manager-Wystaw, configure environment variables and use them in your email sender:
+
+```javascript
+// .env file
+// EMAIL_SENDER_NAME=Manager Wystaw
+// EMAIL_SENDER_ADDRESS=mailbot@grupa-lumen.pl
+
+const nodemailer = require('nodemailer');
+
+// Email configuration from environment
+const emailConfig = {
+  senderName: process.env.EMAIL_SENDER_NAME || 'Your App',
+  senderAddress: process.env.EMAIL_SENDER_ADDRESS || 'noreply@example.com',
+};
+
+// Create transporter
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || 'smtp',
+  port: parseInt(process.env.SMTP_PORT || '25'),
+  secure: false,
+  tls: { rejectUnauthorized: false }
+});
+
+// Send notification email
+async function sendNotification(to, subject, message) {
+  const mailOptions = {
+    from: `"${emailConfig.senderName}" <${emailConfig.senderAddress}>`,
+    to,
+    subject,
+    text: message,
+    html: `<p>${message}</p>`
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent:', info.messageId);
+    return info;
+  } catch (error) {
+    console.error('Failed to send email:', error);
+    throw error;
+  }
+}
+
+// Usage example
+sendNotification(
+  'user@example.com',
+  'Exhibition Alert',
+  'Your exhibition has been approved!'
+);
 ```
 
 ### Using EmailJS (for Node.js server-side)
@@ -171,8 +241,12 @@ ini_set('smtp_port', 25);
 $to = 'recipient@example.com';
 $subject = 'Test Email';
 $message = 'Hello from mini-smtp-server!';
-$headers = 'From: noreply@your-domain.com' . "\r\n" .
-           'Reply-To: noreply@your-domain.com' . "\r\n" .
+
+// Set sender with display name
+$senderName = 'Manager Wystaw';
+$senderEmail = 'mailbot@grupa-lumen.pl';
+$headers = 'From: ' . $senderName . ' <' . $senderEmail . '>' . "\r\n" .
+           'Reply-To: ' . $senderEmail . "\r\n" .
            'X-Mailer: PHP/' . phpversion();
 
 if (mail($to, $subject, $message, $headers)) {
@@ -201,8 +275,8 @@ try {
     $mail->SMTPAuth   = false;
     $mail->Port       = 25;
 
-    // Recipients
-    $mail->setFrom('noreply@your-domain.com', 'Your App');
+    // Recipients with display name
+    $mail->setFrom('mailbot@grupa-lumen.pl', 'Manager Wystaw');  // Sender display name
     $mail->addAddress('recipient@example.com', 'Recipient Name');
 
     // Content
