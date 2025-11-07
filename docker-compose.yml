@@ -1,0 +1,31 @@
+services:
+  smtp:
+    image: boky/postfix
+    container_name: mini-smtp-server
+    hostname: ${HOSTNAME:-smtp.example.com}
+    environment:
+      - HOSTNAME=${HOSTNAME:-smtp.example.com}
+      - ALLOWED_SENDER_DOMAINS=${ALLOWED_SENDER_DOMAINS:-${DOMAIN:-example.com}}
+      - ALLOW_EMPTY_SENDER_DOMAINS=false
+      # DKIM configuration
+      - DKIM_SELECTOR=${DKIM_SELECTOR:-mail}
+      - DKIM_AUTOGENERATE=false
+      # Optional: Message size limit
+      - MESSAGE_SIZE_LIMIT=${MESSAGE_SIZE_LIMIT:-10485760}
+      # Optional: Timezone
+      - TZ=${TZ:-UTC}
+    volumes:
+      # Mount the generated DKIM keys - using exact paths expected by boky/postfix
+      - ./dkim/${DKIM_SELECTOR:-mail}.private:/etc/opendkim/keys/${DOMAIN:-example.com}.private:ro
+      - ./dkim/${DKIM_SELECTOR:-mail}.txt:/etc/opendkim/keys/${DOMAIN:-example.com}.txt:ro
+    ports:
+      # Port 25 is the standard SMTP port.
+      - "${SMTP_PORT:-25}:25"
+    restart: unless-stopped
+    networks:
+      - mail-network
+
+networks:
+  mail-network:
+    name: mail-network
+    driver: bridge

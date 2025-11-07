@@ -1,0 +1,52 @@
+# Example: How to integrate mini-SMTP-server with your application
+#
+# This file shows how to connect your application to mini-SMTP-server.
+# Copy the relevant parts to your application's docker-compose.yml
+
+services:
+  # Your application service
+  my-app:
+    image: your-app-image:latest
+    container_name: my-app
+    environment:
+      # Configure your app to use the SMTP relay
+      - SMTP_HOST=smtp
+      - SMTP_PORT=25
+      - SMTP_FROM=noreply@example.com
+      # No authentication needed for relay
+      - SMTP_AUTH=false
+      - SMTP_TLS=false
+    networks:
+      - mail-network
+    # If mini-SMTP-server is in a separate compose file, use external network:
+    # networks:
+    #   - mail-network
+
+# If using mini-SMTP-server from a separate project:
+networks:
+  mail-network:
+    external: true
+    name: mail-network
+
+# ============================================
+# Alternative: Include mini-SMTP-server directly
+# ============================================
+# If you want to include the SMTP server in the same compose file:
+
+# services:
+#   smtp:
+#     image: boky/postfix
+#     container_name: mini-smtp-server
+#     hostname: ${HOSTNAME:-smtp.example.com}
+#     environment:
+#       - HOSTNAME=${HOSTNAME:-smtp.example.com}
+#       - ALLOWED_SENDER_DOMAINS=${DOMAIN:-example.com}
+#       - ALLOW_EMPTY_SENDER_DOMAINS=false
+#       - DKIM_SELECTOR=${DKIM_SELECTOR:-mail}
+#       - DKIM_AUTOGENERATE=false
+#     volumes:
+#       - /path/to/mini-smtp-server/dkim/${DKIM_SELECTOR:-mail}.private:/etc/opendkim/keys/${DOMAIN:-example.com}.private:ro
+#       - /path/to/mini-smtp-server/dkim/${DKIM_SELECTOR:-mail}.txt:/etc/opendkim/keys/${DOMAIN:-example.com}.txt:ro
+#     networks:
+#       - mail-network
+#     restart: unless-stopped

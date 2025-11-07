@@ -1,0 +1,27 @@
+# Environment files
+.env
+
+# DKIM private keys (NEVER commit these!)
+dkim/*.private
+dkim/*.key
+
+# Docker volumes
+volumes/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Internal documents
+podsumowanie.md

@@ -1,0 +1,38 @@
+# Test service for mini-SMTP-server
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.test.yml up test-mailer
+
+services:
+  test-mailer:
+    image: alpine
+    container_name: test-mailer
+    depends_on:
+      - smtp
+    environment:
+      - TEST_EMAIL=${TEST_EMAIL:-your-email@example.com}
+      - DOMAIN=${DOMAIN:-example.com}
+    command: >
+      sh -c '
+        apk add --no-cache msmtp;
+        echo "defaults" > /etc/msmtprc;
+        echo "tls off" >> /etc/msmtprc;
+        echo "account default" >> /etc/msmtprc;
+        echo "host smtp" >> /etc/msmtprc;
+        echo "port 25" >> /etc/msmtprc;
+        echo "from test@$$DOMAIN" >> /etc/msmtprc;
+        chmod 600 /etc/msmtprc;
+        echo "Waiting for SMTP server to be ready...";
+        sleep 15;
+        echo "Sending test email to $$TEST_EMAIL...";
+        echo -e "Subject: Test DKIM from mini-SMTP-server\n\nThis is a test email sent from mini-SMTP-server.\nCheck the headers to verify DKIM signature.\n\nTimestamp: $$(date)" | msmtp --from=test@$$DOMAIN $$TEST_EMAIL;
+        echo "";
+        echo "✓ Test email sent successfully!";
+        echo "Check your inbox at: $$TEST_EMAIL";
+        echo "";
+        echo "To verify DKIM:";
+        echo "1. Open the email";
+        echo "2. View email headers (Show Original in Gmail)";
+        echo "3. Look for: dkim=pass";
+        echo "";
+      '
+    networks:
+      - mail-network

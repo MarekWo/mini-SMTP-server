@@ -1,0 +1,3 @@
+key002._domainkey	IN	TXT	( "v=DKIM1; h=sha256; k=rsa; "
+	  "p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzUDB6qtS/tx4d2zCcmVpsmRaqhPf0HWTJHSP2MCJH3fQ2jD81qws6+7bE1MnEidTa8wwv0GpEaYyE3c1Zo6qck3p+VCfpf2mqN6ko8TvLtT1gydwjf+UkayEAh2Z1q/QpG+vntt/ohvzgimM0gFDh+wt2tAnFI1e0yIcY4tVxpS3P0hU+MpwgMu6cAws4b117f4HAso+wSGV/7"
+	  "V6n9d0ilBxr3BxqcSvks1U5Sa7iz6MVd4RTVWWpULAwXtEcGGrXzAZaHnqpYx69yWgswYSztptVKECSEA0nbJ51kBmSymBBB6Br3YMmsIzUmh3w8lTskr0uxu8+aw6SKCRElJUTwIDAQAB" )  ; ----- DKIM key key002 for grupa-lumen.pl
