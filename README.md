@@ -96,7 +96,7 @@ dig mail._domainkey.your-domain.com TXT
 ### 6. Start the Server
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### 7. Test Email Delivery
@@ -105,7 +105,7 @@ Send a test email:
 
 ```bash
 # Update TEST_EMAIL in .env first
-docker-compose -f docker-compose.yml -f docker-compose.test.yml up test-mailer
+docker compose -f docker-compose.yml -f docker-compose.test.yml up test-mailer
 ```
 
 Check the email headers to verify DKIM signature passes.
