@@ -15,9 +15,9 @@ services:
       # Optional: Timezone
       - TZ=${TZ:-UTC}
     volumes:
-      # Mount the generated DKIM keys - using exact paths expected by boky/postfix
-      - ./dkim/${DKIM_SELECTOR:-mail}.private:/etc/opendkim/keys/${DOMAIN:-example.com}.private:ro
-      - ./dkim/${DKIM_SELECTOR:-mail}.txt:/etc/opendkim/keys/${DOMAIN:-example.com}.txt:ro
+      # Mount the generated DKIM keys - REMOVED :ro to allow chown inside container
+      - ./dkim/${DKIM_SELECTOR:-mail}.private:/etc/opendkim/keys/${DOMAIN:-example.com}.private
+      - ./dkim/${DKIM_SELECTOR:-mail}.txt:/etc/opendkim/keys/${DOMAIN:-example.com}.txt
     ports:
       # Port 25 is the standard SMTP port.
       - "${SMTP_PORT:-25}:25"
@@ -28,4 +28,4 @@ services:
 networks:
   smtp-network:
     name: ${NETWORK_NAME:-mail-network}
-    driver: bridge
+    external: true
