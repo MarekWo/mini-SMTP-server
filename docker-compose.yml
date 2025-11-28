@@ -24,6 +24,9 @@ services:
     restart: unless-stopped
     networks:
       - smtp-network
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
 
 networks:
   smtp-network:
